@@ -22,7 +22,15 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        {/* 全アプリ共通フッター（class→className以外は指定どおり） */}
+        <footer className="border-t border-zinc-200 py-4 text-center text-xs text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
+          <p>
+            by <span className="brand">さんべい</span>
+          </p>
+        </footer>
+      </body>
     </html>
   );
 }
