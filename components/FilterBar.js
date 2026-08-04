@@ -15,7 +15,7 @@ export default function FilterBar({ filter, onFilterChange }) {
           onClick={() => onFilterChange(f.key)}
           className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
             filter === f.key
-              ? "bg-indigo-600 text-white"
+              ? "bg-sky-600 text-white"
               : "bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
           }`}
         >

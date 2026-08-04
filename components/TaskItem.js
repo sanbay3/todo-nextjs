@@ -6,7 +6,7 @@ export default function TaskItem({ task, onToggle, onDelete }) {
         type="checkbox"
         checked={task.completed}
         onChange={() => onToggle(task.id)}
-        className="h-5 w-5 shrink-0 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+        className="h-5 w-5 shrink-0 rounded border-zinc-300 text-sky-600 focus:ring-sky-500"
       />
       <span
         className={`flex-1 break-words text-sm ${
