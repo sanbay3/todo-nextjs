@@ -54,13 +54,18 @@ export default function TodoApp() {
   }, [tasks]);
 
   // タスクを追加する
-  const addTask = (text) => {
+  // dueDateは "YYYY-MM-DD" 形式の文字列、または期限なしならnull。
+  // 文字列のまま統一しておくと、このあとの並び替えで
+  // Dateオブジェクトに変換しなくても文字列同士の比較（< や >）だけで
+  // 日付の前後関係を判定できて扱いやすい。
+  const addTask = (text, dueDate) => {
     const newTask = {
       // Date.now()は同じミリ秒内に連続追加すると重複する可能性があるため、
       // 常に一意な値を作れるcrypto.randomUUID()を使う。
       id: crypto.randomUUID(),
       text,
       completed: false,
+      dueDate: dueDate || null,
     };
     // setTasks(prev => ...) の形（関数を渡す形）を使うと、
     // 常に「直前の最新のtasks」を元に新しい配列を作れるので安全。
@@ -89,6 +94,28 @@ export default function TodoApp() {
     return true; // "all"
   });
 
+  // 期限が近い順に並び替える。期限なし（null）のタスクは一番後ろに回す。
+  //
+  // [...filteredTasks] でコピーを作ってからsortしているのは、
+  // Array.prototype.sort() が元の配列を直接書き換えてしまう（破壊的メソッド）ため。
+  // filteredTasksを直接sortすると、Reactの外側でtasksの並びをこっそり
+  // 変更してしまうことになり、予期しない不具合の原因になりやすい。
+  //
+  // 比較関数がaとbどちらも「期限なし」や「同じ日付」の場合は0を返している。
+  // モダンなJavaScriptエンジンのsortは安定ソート（同じ順位のものは元の順番を
+  // 保つ）と仕様で決まっているため、0を返せば「並び替えない＝元の順番のまま」
+  // という意味になる。
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    if (a.dueDate && b.dueDate) {
+      if (a.dueDate < b.dueDate) return -1;
+      if (a.dueDate > b.dueDate) return 1;
+      return 0;
+    }
+    if (a.dueDate && !b.dueDate) return -1; // 期限ありを前に
+    if (!a.dueDate && b.dueDate) return 1; // 期限なしを後ろに
+    return 0;
+  });
+
   const remainingCount = tasks.filter((task) => !task.completed).length;
 
   return (
@@ -103,7 +130,7 @@ export default function TodoApp() {
         <FilterBar filter={filter} onFilterChange={setFilter} />
       </div>
 
-      <TaskList tasks={filteredTasks} onToggle={toggleTask} onDelete={deleteTask} />
+      <TaskList tasks={sortedTasks} onToggle={toggleTask} onDelete={deleteTask} />
 
       {tasks.length > 0 && (
         <p className="mt-5 text-center text-xs text-zinc-400 dark:text-zinc-500">
