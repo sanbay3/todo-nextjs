@@ -31,14 +31,26 @@ export default function TaskForm({ onAdd }) {
         placeholder="タスクを入力..."
         className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
       />
-      <div className="flex gap-2">
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          aria-label="期限（任意）"
-          className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-        />
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          {/* 見た目に出ないaria-labelだけでは「これが何の日付か」「省略可能か」が
+              画面を見ただけでは伝わらなかったため、目に見えるラベルに変更した。
+              htmlFor/idで<label>と<input>を紐づけると、ラベル文字をクリック/
+              タップしても入力欄にフォーカスが移るので、押せる範囲も広がる。 */}
+          <label
+            htmlFor="task-due-date"
+            className="mb-1 block text-xs text-zinc-500 dark:text-zinc-400"
+          >
+            期限（任意）
+          </label>
+          <input
+            id="task-due-date"
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+          />
+        </div>
         <button
           type="submit"
           className="shrink-0 rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-700"
