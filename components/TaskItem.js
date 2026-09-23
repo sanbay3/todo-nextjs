@@ -21,8 +21,8 @@ function formatDueDate(dateStr) {
   return `${Number(month)}月${Number(day)}日`;
 }
 
-// タスク1件分の行（チェックボックス・テキスト・期限・削除ボタン）
-export default function TaskItem({ task, onToggle, onDelete }) {
+// タスク1件分の行（チェックボックス・重要フラグ・テキスト・期限・削除ボタン）
+export default function TaskItem({ task, onToggle, onTogglePriority, onDelete }) {
   // 期限が今日より前 かつ 未完了 のときだけ「期限切れ」として強調する。
   // 文字列同士でも "YYYY-MM-DD" 形式なら < で日付の前後を正しく比較できる。
   //
@@ -67,6 +67,19 @@ export default function TaskItem({ task, onToggle, onDelete }) {
           </span>
         )}
       </div>
+      <button
+        type="button"
+        onClick={() => onTogglePriority(task.id)}
+        aria-label={task.priority ? "重要を解除" : "重要にする"}
+        aria-pressed={Boolean(task.priority)}
+        className={`shrink-0 rounded-full p-1.5 text-lg leading-none transition-colors ${
+          task.priority
+            ? "text-amber-400 hover:text-amber-500"
+            : "text-zinc-300 hover:text-amber-400 dark:text-zinc-600"
+        }`}
+      >
+        {task.priority ? "★" : "☆"}
+      </button>
       <button
         type="button"
         onClick={() => onDelete(task.id)}

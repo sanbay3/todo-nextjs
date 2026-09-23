@@ -66,6 +66,11 @@ export default function TodoApp() {
       text,
       completed: false,
       dueDate: dueDate || null,
+      // 優先度（重要かどうか）はここではfalse固定にしている。
+      // 追加フォームに項目を増やすとタスクを書き留める時の手間が増えてしまうため、
+      // 「追加はとにかく速く」「重要フラグは後から一覧上で気軽に付け外し」という
+      // 役割分担にした。
+      priority: false,
     };
     // setTasks(prev => ...) の形（関数を渡す形）を使うと、
     // 常に「直前の最新のtasks」を元に新しい配列を作れるので安全。
@@ -77,6 +82,15 @@ export default function TodoApp() {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  // 重要フラグ（優先度）を切り替える
+  const togglePriority = (id) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, priority: !task.priority } : task
       )
     );
   };
@@ -95,6 +109,11 @@ export default function TodoApp() {
   });
 
   // 期限が近い順に並び替える。期限なし（null）のタスクは一番後ろに回す。
+  // 期限が同じ（または両方とも期限なし）の場合だけ、重要フラグの有無で決める。
+  //
+  // 優先度を並び順の主軸にしていないのはあえて。「重要だけど来月でいいタスク」が
+  // 「普通だけど今日締切のタスク」より上に来てしまうと、期限順ソートの意味が
+  // 薄れてしまう。重要フラグはあくまで「同じ期限内でのタイブレーク」に留めている。
   //
   // [...filteredTasks] でコピーを作ってからsortしているのは、
   // Array.prototype.sort() が元の配列を直接書き換えてしまう（破壊的メソッド）ため。
@@ -105,15 +124,21 @@ export default function TodoApp() {
   // モダンなJavaScriptエンジンのsortは安定ソート（同じ順位のものは元の順番を
   // 保つ）と仕様で決まっているため、0を返せば「並び替えない＝元の順番のまま」
   // という意味になる。
+  const comparePriority = (a, b) => {
+    const aImportant = Boolean(a.priority);
+    const bImportant = Boolean(b.priority);
+    if (aImportant === bImportant) return 0;
+    return aImportant ? -1 : 1; // 重要な方を前に
+  };
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     if (a.dueDate && b.dueDate) {
       if (a.dueDate < b.dueDate) return -1;
       if (a.dueDate > b.dueDate) return 1;
-      return 0;
+      return comparePriority(a, b); // 同じ期限日どうしなら重要な方を前に
     }
     if (a.dueDate && !b.dueDate) return -1; // 期限ありを前に
     if (!a.dueDate && b.dueDate) return 1; // 期限なしを後ろに
-    return 0;
+    return comparePriority(a, b); // 両方期限なしなら重要な方を前に
   });
 
   const remainingCount = tasks.filter((task) => !task.completed).length;
@@ -130,7 +155,12 @@ export default function TodoApp() {
         <FilterBar filter={filter} onFilterChange={setFilter} />
       </div>
 
-      <TaskList tasks={sortedTasks} onToggle={toggleTask} onDelete={deleteTask} />
+      <TaskList
+        tasks={sortedTasks}
+        onToggle={toggleTask}
+        onTogglePriority={togglePriority}
+        onDelete={deleteTask}
+      />
 
       {tasks.length > 0 && (
         <p className="mt-5 text-center text-xs text-zinc-400 dark:text-zinc-500">

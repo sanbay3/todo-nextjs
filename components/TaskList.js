@@ -1,7 +1,7 @@
 import TaskItem from "./TaskItem";
 
 // タスクの一覧表示。中身はTaskItemを並べるだけのシンプルな役割
-export default function TaskList({ tasks, onToggle, onDelete }) {
+export default function TaskList({ tasks, onToggle, onTogglePriority, onDelete }) {
   if (tasks.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500">
@@ -21,6 +21,7 @@ export default function TaskList({ tasks, onToggle, onDelete }) {
           key={task.id}
           task={task}
           onToggle={onToggle}
+          onTogglePriority={onTogglePriority}
           onDelete={onDelete}
         />
       ))}
