@@ -12,12 +12,15 @@ Next.js（App Router）で作ったシンプルなToDoアプリです。
 - 期限（任意）の設定、期限が近い順の自動並び替え、期限切れタスクの強調表示
 - 重要フラグ（★）のON/OFF。同じ期限内では重要なタスクを優先表示
 - フィルター表示（すべて / 未完了 / 完了）
+- 残りタスク件数の表示
 - localStorageによるデータ永続化（ページ更新後も保持）
 - モバイル対応のレスポンシブデザイン
 
 ## 使用技術
 
-- Next.js（App Router）
-- React（useState / useEffect）
+- Next.js 16（App Router）
+- React 19（useState / useEffect）
 - JavaScript（TypeScriptは未使用）
-- Tailwind CSS
+- Tailwind CSS 4
+- localStorage
+- デプロイ: Cloudflare Pages（静的書き出し `output: "export"`）
